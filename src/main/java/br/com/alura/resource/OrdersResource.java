@@ -1,32 +1,32 @@
 package br.com.alura.resource;
 
 import br.com.alura.model.Order;
-import br.com.alura.repository.OrderRepository;
+import br.com.alura.security.ApplicationRoles;
+import br.com.alura.service.OrderService;
 
-import javax.transaction.Transactional;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import java.time.LocalDate;
+import javax.ws.rs.core.SecurityContext;
 
 @Path("/orders")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class OrdersResource {
 
-  private final OrderRepository repository;
+  private final OrderService service;
 
-  public OrdersResource(OrderRepository repository) {
-    this.repository = repository;
+  public OrdersResource(OrderService service) {
+    this.service = service;
   }
 
   @POST
-  @Transactional
-  public void create(Order order) {
-    order.setDate(LocalDate.now());
-    order.setStatus("SENT");
-    repository.persist(order);
+  @RolesAllowed(ApplicationRoles.USER)
+  public void create(@Context SecurityContext securityContext, Order order) {
+    service.addOrder(securityContext.getUserPrincipal().getName(), order);
   }
 }

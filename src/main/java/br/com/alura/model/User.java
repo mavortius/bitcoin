@@ -1,10 +1,17 @@
 package br.com.alura.model;
 
+import br.com.alura.security.ApplicationRoles;
+import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import io.quarkus.security.jpa.Password;
+import io.quarkus.security.jpa.Roles;
+import io.quarkus.security.jpa.UserDefinition;
+import io.quarkus.security.jpa.Username;
 
 import javax.persistence.*;
 
 @Entity
+@UserDefinition
 @Table(name = "`user`")
 public class User extends PanacheEntityBase {
   @Id
@@ -12,8 +19,15 @@ public class User extends PanacheEntityBase {
   private Long id;
   private String name;
   private String cpf;
+
+  @Username
   private String username;
+
+  @Password
   private String password;
+
+  @Roles
+  private String role;
 
   public Long getId() {
     return id;
@@ -53,5 +67,27 @@ public class User extends PanacheEntityBase {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public String getRole() {
+    return role;
+  }
+
+  public void setRole(String role) {
+    this.role = role;
+  }
+
+  public static void add(User user) {
+    final String hashedPassword = BcryptUtil.bcryptHash(user.getPassword());
+    user.setPassword(hashedPassword);
+    user.setRole(validate(user.getUsername()));
+    user.persist();
+  }
+
+  private static String validate(String username) {
+    if (username.equals("alura")) {
+      return ApplicationRoles.ADMIN;
+    }
+    return ApplicationRoles.USER;
   }
 }

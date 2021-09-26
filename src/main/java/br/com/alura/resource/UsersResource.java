@@ -17,6 +17,6 @@ public class UsersResource {
   @POST
   @Transactional
   public void create(User user) {
-    User.persist(user);
+    User.add(user);
   }
 }
