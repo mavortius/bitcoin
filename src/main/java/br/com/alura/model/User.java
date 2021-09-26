@@ -8,6 +8,7 @@ import io.quarkus.security.jpa.Roles;
 import io.quarkus.security.jpa.UserDefinition;
 import io.quarkus.security.jpa.Username;
 
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.*;
 
 @Entity
@@ -37,6 +38,7 @@ public class User extends PanacheEntityBase {
     this.id = id;
   }
 
+  @JsonbTransient
   public String getPassword() {
     return password;
   }

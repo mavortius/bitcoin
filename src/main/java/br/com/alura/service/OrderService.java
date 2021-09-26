@@ -9,6 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
 import javax.ws.rs.core.SecurityContext;
 import java.time.LocalDate;
+import java.util.List;
 
 @ApplicationScoped
 public class OrderService {
@@ -26,5 +27,9 @@ public class OrderService {
     order.setDate(LocalDate.now());
     order.setStatus("SENT");
     repository.persist(order);
+  }
+
+  public List<Order> listAll() {
+    return repository.listAll();
   }
 }
